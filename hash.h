@@ -1,3 +1,5 @@
+#ifndef __HASH__
+#define __HASH__ 
 struct hTab {
   void *x[256]; /* 00 to FF */
   void *p;
@@ -18,3 +20,4 @@ int insert(hTab *, unsigned char *, unsigned char *);
 unsigned char * lookup(hTab *, unsigned char *);
 
 int total_collisions();
+#endif

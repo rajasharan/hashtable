@@ -5,46 +5,6 @@
 
 static int collisions = 0;
 
-int main() {
-  hTab *main_table = (hTab *)malloc(sizeof(hTab));
-  unsigned char *key = "raja";
-  unsigned char *val = "hello";
-  unsigned char *result;
-
-  char input[1000];
-  int in,collision,n;
-  while(1) {
-    collision=0;
-    n=0;
-    putchar('>');
-    putchar('>');
-    putchar(' ');
-
-    while ((in = getchar()) != EOF && in != 10 && in != 13 && n < 1000) {
-      input[n++] = in;
-    }
-    input[n] = '\0';
-
-    key = strtok(input,"=");
-    val = strtok(NULL,"=");
-    if(val != NULL) { /* insert */
-      collision = insert(main_table,key,val);
-      if(collision)
-        printf("key '%s' inserted with collision\n",key);
-      else
-        printf("key '%s' inserted\n",key);
-    }else { /* lookup */
-      result = lookup(main_table,input);
-      if(result == NULL)
-        printf("Value not found for key '%s'\n",key);
-      else
-        printf("%s\n",result);
-    }
-  }
-
-  return 0;
-}
-
 long long hash(unsigned char *c) {
   long long h = 6; /* 0110 */
   while(*c != '\0' && *c != 10 && *c != 13) {
