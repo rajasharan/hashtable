@@ -4,6 +4,8 @@
 #include "hash.h"
 
 static int collisions = 0;
+static long long hash(unsigned char *);
+static int total_collisions();
 
 long long hash(unsigned char *c) {
   long long h = 6; /* 0110 */
