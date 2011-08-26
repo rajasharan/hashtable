@@ -1,0 +1,18 @@
+This is a simple 64-bit hashtable implementation. For now all keys-values are strings.
+
+SETUP:
+$ gcc hash.c
+$ ./a.out 
+>> sauron=lord of the rings 
+key 'sauron' inserted
+>> hello=world
+key 'hello' inserted
+>> helo
+Value not found for key 'helo'
+>> hello
+world
+>> sauron
+lord of the rings
+
+INTERNALS:
+
