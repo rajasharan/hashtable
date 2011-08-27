@@ -22,6 +22,8 @@ Replace main() function with your own implementation.
 List of functions supported:
   insert
   lookup
+  total_memory
+  total_collisions
 
 /* sample implementation */
 

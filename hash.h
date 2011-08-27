@@ -17,4 +17,7 @@ int insert(hTab *, unsigned char *, unsigned char *);
 
 unsigned char * lookup(hTab *, unsigned char *);
 
+int total_collisions();
+long total_memory();
+
 #endif

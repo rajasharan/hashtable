@@ -3,9 +3,12 @@
 #include <string.h>
 #include "hash.h"
 
+#define t (total_mem)=(total_mem)+(sizeof(hTab))
+#define pt (total_mem)=(total_mem)+(sizeof(pair))
+
 static int collisions = 0;
+static long total_mem = 0;
 static long long hash(unsigned char *);
-static int total_collisions();
 
 long long hash(unsigned char *c) {
   long long h = 6; /* 0110 */
@@ -23,21 +26,33 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   unsigned char *c = (unsigned char *) &h;
   short i = *c;
 
-  if(main_table->x[i] == NULL)
+  if(main_table->x[i] == NULL) {
     main_table->x[i] = (hTab *)malloc(sizeof(hTab));
+    if(main_table->x[i] == NULL) {
+      perror("INSERT: ");
+      return -1;
+    }
+    t; 
+  }
 
   hTab *tab;
   tab = main_table->x[i];
   int count = 0;
   while(count < 7) { /* 8-byte (64-bit) address spacing */
     i = *++c;
-    if(tab->x[i] == NULL)
+    if(tab->x[i] == NULL) {
       tab->x[i] = (hTab *)malloc(sizeof(hTab));
+      if(tab->x[i] == NULL) {
+        perror("INSERT: ");
+        return -1;
+      }
+      t;
+    }
     tab = tab->x[i];
     count++;
   }
   
-  pair *p = (pair *)malloc(sizeof(pair));
+  pair *p = (pair *)malloc(sizeof(pair)); pt;
   unsigned char *k, *v;
   k = (unsigned char *)malloc(1000);
   v = (unsigned char *)malloc(1000);
@@ -45,16 +60,12 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   strcpy(v,val);
   p->key = (unsigned char *) k;
   p->val = (unsigned char *) v;
-  if(tab->p == NULL || lookup(main_table,key) != NULL) { /* if key exsists, overwrite */
+  if(tab->p == NULL) {
     tab->p = p;
-  }else { /* collision should not happen otherwise performance is screwed */
+  }else { 
     pair *temp = tab->p;
-    while(temp->p != NULL) {
-      collisions++;
-      collided++;
-      temp = temp->p; 
-    }
-    temp->p = p;
+    tab->p = p;
+    p->p = temp;
   }
 
   return collided;
@@ -98,4 +109,8 @@ unsigned char * lookup(hTab *main_table, unsigned char *key) {
 
 int total_collisions() {
   return collisions;
+}
+
+long total_memory() {
+  return total_mem;
 }
