@@ -22,7 +22,6 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   long long h = hash(key);
   unsigned char *c = (unsigned char *) &h;
   short i = *c;
-  //printf("c = %d\n",i);
 
   if(main_table->x[i] == NULL)
     main_table->x[i] = (hTab *)malloc(sizeof(hTab));
@@ -32,7 +31,6 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   int count = 0;
   while(count < 7) { /* 8-byte (64-bit) address spacing */
     i = *++c;
-    //printf("c = %d\n",i);
     if(tab->x[i] == NULL)
       tab->x[i] = (hTab *)malloc(sizeof(hTab));
     tab = tab->x[i];
@@ -66,7 +64,6 @@ unsigned char * lookup(hTab *main_table, unsigned char *key) {
   long long h = hash(key);
   unsigned char *c = (unsigned char *) &h;
   short i = *c;
-  //printf("v = %d\n",i);
 
   if(main_table->x[i] == NULL)
     return NULL;
@@ -75,7 +72,6 @@ unsigned char * lookup(hTab *main_table, unsigned char *key) {
   int count = 0;
   while(count < 7) {
     i = *++c;
-    //printf("v = %d\n",i);
     if(tab->x[i] == NULL)
       return NULL;
 
@@ -91,7 +87,6 @@ unsigned char * lookup(hTab *main_table, unsigned char *key) {
     /* search through the chain to resolve collision */
     pair *temp = tab->p;
     while(temp->p != NULL) {
-      //printf("s = %s\n",(unsigned char *)(((pair *)tab->p)->key));
       if(strcmp(key, (unsigned char *)(temp->key)) == 0)
         return (unsigned char *)(temp->val);
       temp = temp->p;
