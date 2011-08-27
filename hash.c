@@ -21,6 +21,8 @@ long long hash(unsigned char *c) {
 }
 
 int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
+  if(key == NULL || val == NULL)
+    return -1;
   int collided = 0;
   long long h = hash(key);
   unsigned char *c = (unsigned char *) &h;
@@ -56,13 +58,15 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   unsigned char *k, *v;
   k = (unsigned char *)malloc(1000);
   v = (unsigned char *)malloc(1000);
-  memcpy(k,key,val-key);
+  strcpy(k,key);
   strcpy(v,val);
   p->key = (unsigned char *) k;
   p->val = (unsigned char *) v;
   if(tab->p == NULL) {
     tab->p = p;
   }else { 
+    collisions++;
+    collided++;
     pair *temp = tab->p;
     tab->p = p;
     p->p = temp;
