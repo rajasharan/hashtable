@@ -3,11 +3,13 @@
 #include <string.h>
 #include "hash.h"
 
-#define t (total_mem)=(total_mem)+(sizeof(hTab))
-#define pt (total_mem)=(total_mem)+(sizeof(pair))
+#define t (table_mem)=(table_mem)+(sizeof(hTab))
+#define pt (real_mem)=(real_mem)+(sizeof(pair))
 
-static int collisions = 0;
-static long total_mem = 0;
+static long collisions = 0;
+static long long table_mem = 0;
+static long long real_mem = 0;
+static long long key_count = 0;
 static long long hash(unsigned char *);
 
 long long hash(unsigned char *c) {
@@ -17,6 +19,7 @@ long long hash(unsigned char *c) {
     h = (h<<5) + *c ;
     c++;
   }
+  //printf("%llx\n",h);
   return h;
 }
 
@@ -71,7 +74,7 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
     tab->p = p;
     p->p = temp;
   }
-
+  key_count++;
   return collided;
 }
 
@@ -111,10 +114,18 @@ unsigned char * lookup(hTab *main_table, unsigned char *key) {
   return NULL;
 }
 
-int total_collisions() {
+long total_collisions() {
   return collisions;
 }
 
-long total_memory() {
-  return total_mem;
+long long total_memory() {
+  return real_mem + table_mem;
+}
+
+long long total_keys() {
+  return key_count;
+}
+
+int memory_efficiency() {
+  return (int)((real_mem * 100.0f )/(real_mem + table_mem));
 }

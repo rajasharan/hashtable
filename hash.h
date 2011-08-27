@@ -17,7 +17,9 @@ int insert(hTab *, unsigned char *, unsigned char *);
 
 unsigned char * lookup(hTab *, unsigned char *);
 
-int total_collisions();
-long total_memory();
+long total_collisions();
+long long total_memory();
+long long total_keys();
+int memory_efficiency();
 
 #endif

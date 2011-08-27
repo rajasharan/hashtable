@@ -22,8 +22,10 @@ Replace main() function with your own implementation.
 List of functions supported:
   insert
   lookup
-  total_memory
+  total_keys
   total_collisions
+  total_memory
+  memory_efficiency
 
 /* sample implementation */
 

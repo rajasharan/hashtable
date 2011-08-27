@@ -3,3 +3,4 @@
 *.txt
 *.swp
 hashtable
+*.DS*
