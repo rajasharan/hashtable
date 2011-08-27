@@ -1,4 +1,4 @@
-This is a simple 64-bit hashtable implementation. 
+A simple 64-bit hashtable implementation with memory profilier.
 
 SETUP
 
@@ -16,7 +16,7 @@ world
 lord of the rings
 
 
-USAGE
+ALTERNATIVE USAGE
 
 Replace main() function with your own implementation. 
 List of functions supported:
@@ -25,43 +25,20 @@ List of functions supported:
   total_keys
   total_collisions
   total_memory
+  real_memory
   memory_efficiency
 
 /* sample implementation */
-
-  hTab *table = (hTab *)malloc(sizeof(hTab));
+#include "hash.h"
+  ...
+  table *main_table = (main_table *)malloc(sizeof(main_table));
   unsigned char *key = "name";
   unsigned char *val = "raja";
   unsigned char *result;
 
-  insert(table,key,val);
-  result = lookup(table,key);
+  insert(main_table,key,val);
+  result = lookup(main_table,key);
 
   printf("%s",result);
-
-/*-------- END ---------*/ 
-
-
-INTERNALS
-
-keys are distributed over the entire 64-bit address space. A 256-link tree structure upto 8 length height is implemented which grows dynamically at runtime as keys are added into the system. keys can be any alphanumerice strings. They are hashed to a 64-bit(8 byte) long integer value. Each byte of the integer hash represents one level on the tree. 
-
-Ex: 
-  consider the key 'raja'
-  hash('raja') => (00 00 00 00 00 9A 91 A1)
-
-           _______
-  table-->|       |    _______
-          | x[A1]-+-->|       |    _______ 
-          |_______|   | x[91]-+-->|       |    _______
-                      |_______|   | x[9A]-+-->|       |    _______
-                                  |_______|   | x[00]-+-->|       |    _______
-                                              |_______|   | x[00]-+-->|       |    _______ 
-                                                          |_______|   | x[00]-+-->|       |    _______
-                                                                      |_______|   | x[00]-+-->|       |    _________ 
-                                                                                  |_______|   | x[00]-+-->|         |
-                                                                                              |_______|   | key=val |
-                                                                                                          |  pair   |
-                                                                                                          |_________| 
- 
+  ...
 

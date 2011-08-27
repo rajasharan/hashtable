@@ -4,7 +4,7 @@
 #include "hash.h"
 
 int main() {
-  hTab *main_table = (hTab *)malloc(sizeof(hTab));
+  table *main_table = (table *)malloc(sizeof(table));
   unsigned char *key;
   unsigned char *val;
   unsigned char *result;

@@ -1,10 +1,11 @@
 #ifndef __HASH__
 #define __HASH__ 
-struct hTab {
-  void *x[256]; /* 00 to FF */
-  void *p;
+struct table {
+  void *l; /* left */
+  void *r; /* right */
+  void *p; /* key-val pair */
 };
-typedef struct hTab hTab;
+typedef struct table table;
 
 struct pair {
   void *key;
@@ -13,12 +14,13 @@ struct pair {
 };
 typedef struct pair pair;
 
-int insert(hTab *, unsigned char *, unsigned char *);
+int insert(table *, unsigned char *, unsigned char *);
 
-unsigned char * lookup(hTab *, unsigned char *);
+unsigned char * lookup(table *, unsigned char *);
 
 long total_collisions();
 long long total_memory();
+long long real_memory();
 long long total_keys();
 double memory_efficiency();
 
