@@ -20,6 +20,6 @@ unsigned char * lookup(hTab *, unsigned char *);
 long total_collisions();
 long long total_memory();
 long long total_keys();
-int memory_efficiency();
+double memory_efficiency();
 
 #endif

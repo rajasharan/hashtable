@@ -67,7 +67,7 @@ int insert(hTab *main_table, unsigned char *key, unsigned char *val) {
   p->val = (unsigned char *) v;
   if(tab->p == NULL) {
     tab->p = p;
-  }else { 
+  }else {
     collisions++;
     collided++;
     pair *temp = tab->p;
@@ -126,6 +126,8 @@ long long total_keys() {
   return key_count;
 }
 
-int memory_efficiency() {
-  return (int)((real_mem * 100.0f )/(real_mem + table_mem));
+double memory_efficiency() {
+  printf("real_mem = %llu\n",real_mem);
+  printf("table_mem = %llu\n",table_mem);
+  return (double)((real_mem * (long double)100)/(real_mem + table_mem));
 }
