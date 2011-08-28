@@ -1,0 +1,21 @@
+RUNNING TESTS
+
+$ make clean
+$ make tests
+USAGE: ./hash-test <input-files-containing-keys>
+
+!!! WARNING: HIGH MEMORY USAGE
+(run on your own risk, the below command generates a million unique keys
+
+$ cat /dev/urandom | od | cut -d\  -f2-9 | sed "s/ //g"| head -1000000 > million-keys.txt
+$ ./hash-test million-keys.txt 
+
+SAMPLE RESULTS
+
+Total # of collisions: 15
+Number of keys: 1000000
+Total memory footprint: 747700320
+Actual memory used: 24000000
+Memory efficiency: 3.209842%
+
+(memory count in bytes; only approximate estimates)
