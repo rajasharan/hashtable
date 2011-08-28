@@ -5,7 +5,7 @@
 
 #define t (table_mem)=(table_mem)+(sizeof(table))
 #define pt (real_mem)=(real_mem)+(sizeof(pair))
-#define LENGHT 1000
+#define LENGTH 1000
 
 static long collisions = 0;
 static long long table_mem = 0;
@@ -15,6 +15,10 @@ static long long hash(unsigned char *);
 static table *get_location(table *,unsigned char *);
 
 long long hash(unsigned char *c) {
+  if(!c) {
+    perror("HASH");
+    exit(1);
+  }
   long long h = 6; /* 0110 */
   while(*c != '\0' && *c != 10 && *c != 13) {
     /* shifting bits left because there will be new bits of c coming in */
@@ -26,29 +30,45 @@ long long hash(unsigned char *c) {
 }
 
 int insert(table *main_table, unsigned char *key, unsigned char *val) {
-  if(key == NULL || val == NULL)
+  if(!key || !val)
     return -1;
   int collided = 0;
+  unsigned char *k, *v;
 
-  main_table = get_location(main_table,key);
-  if(main_table->p != NULL && strcmp(key,(unsigned char *)(((pair *)main_table->p)->key)) == 0)
-    return 0; /* incoming duplicate key */
+  table *tab = get_location(main_table,key);
+  if(!tab) {
+    perror("INSERT");
+    exit(1);
+  }
+  
+  if(tab->p != NULL && strcmp(key,(unsigned char *)(((pair *)tab->p)->key)) == 0) {
+    v = (unsigned char *)malloc(LENGTH);
+    strcpy(v,val);
+    ((pair *)tab->p)->val = v;
+    return 0; /* overwrite value */
+  }
 
   pair *p = (pair *)malloc(sizeof(pair)); pt;
-  unsigned char *k, *v;
-  k = (unsigned char *)malloc(LENGHT);
-  v = (unsigned char *)malloc(LENGHT);
+  k = (unsigned char *)malloc(LENGTH);
+  v = (unsigned char *)malloc(LENGTH);
+  if(!p || !k || !v) {
+    perror("INSERT");
+    exit(1);
+  }
+  p->key = NULL; p->val = NULL; p->p = NULL;
+
   strcpy(k,key);
   strcpy(v,val);
   p->key = (unsigned char *) k;
   p->val = (unsigned char *) v;
-  if(main_table->p == NULL) {
-    main_table->p = p;
+
+  if(tab->p == NULL) {
+    tab->p = p;
   }else {
     collisions++;
     collided++;
-    pair *temp = main_table->p;
-    main_table->p = p;
+    pair *temp = tab->p;
+    tab->p = p;
     p->p = temp;
   }
   key_count++;
@@ -56,14 +76,19 @@ int insert(table *main_table, unsigned char *key, unsigned char *val) {
 }
 
 unsigned char * lookup(table *main_table, unsigned char *key) {
-  main_table = get_location(main_table,key);
-  if(main_table->p == NULL)
+  table *tab = get_location(main_table,key);
+  if(!tab) {
+    perror("LOOKUP");
+    exit(1);
+  }
+
+  if(tab->p == NULL)
     return NULL;
-  else if(main_table->p != NULL && ((pair *)main_table->p)->p == NULL)
-    return (unsigned char *)(((pair *)main_table->p)->val);
+  else if(tab->p != NULL && ((pair *)tab->p)->p == NULL)
+    return (unsigned char *)(((pair *)tab->p)->val);
   else {
     /* search through the chain to resolve collision */
-    pair *temp = main_table->p;
+    pair *temp = tab->p;
     while(temp->p != NULL) {
       if(strcmp(key, (unsigned char *)(temp->key)) == 0)
         return (unsigned char *)(temp->val);
@@ -74,38 +99,45 @@ unsigned char * lookup(table *main_table, unsigned char *key) {
 }
 
 table *get_location(table *main_table, unsigned char *key) {
+  if(!main_table) {
+    perror("GET_LOCATION");
+    exit(1);
+  }
+  table *tab = main_table;
   long long h = hash(key);
-  long long mask = 1;
-  long long temp;
-  char *c;
-  short byte = -1;
-  short count = 0;
+  long long mask;
+  int count = 0;
 
   while(count < 64) {
-    mask = mask<<count;
-    temp = h & mask;
-    c = (char *)&temp;
-
-    if(count % 8 == 0)
-      byte++;
-
-    while(byte > 0)
-      c++; byte--;
-
-    if(*c) { /* left */
-      if(main_table->l == NULL) {
-        main_table->l = (table *)malloc(sizeof(table)); t;
+    mask = 1;
+    if(!(h & (mask<<count))) { /* left */
+      if(tab->l == NULL) {
+        tab->l = (table *)malloc(sizeof(table)); t;
+        if(tab->l == NULL) {
+          perror("GET_LOCATION");
+          exit(1);
+        }
+        tab = tab->l;
+        tab->l = NULL; tab->r = NULL; tab->p = NULL;
+      }else{
+        tab = tab->l;
       }
-      main_table = main_table->l;
-    } else { /* right */
-      if(main_table->r == NULL) {
-        main_table->r = (table *)malloc(sizeof(table)); t;
+    }else{ /* right */
+      if(tab->r == NULL) {
+        tab->r = (table *)malloc(sizeof(table)); t;
+        if(tab->r == NULL) {
+          perror("GET_LOCATION");
+          exit(1);
+        }
+        tab = tab->r;
+        tab->l = NULL; tab->r = NULL; tab->p = NULL;
+      }else{
+        tab = tab->r;
       }
-      main_table = main_table->r;
     }
     count++;
   }
-  return main_table;
+  return tab;
 }
 
 long total_collisions() {

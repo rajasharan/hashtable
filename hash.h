@@ -1,18 +1,17 @@
 #ifndef __HASH__
 #define __HASH__ 
-struct table {
-  void *l; /* left */
-  void *r; /* right */
-  void *p; /* key-val pair */
-};
-typedef struct table table;
 
-struct pair {
-  void *key;
-  void *val;
-  void *p;
-};
-typedef struct pair pair;
+typedef struct pair {
+  unsigned char *key;
+  unsigned char *val;
+  struct pair *p;
+}pair;
+
+typedef struct table {
+  struct table *l; /* left */
+  struct table *r; /* right */
+  pair *p; /* key-val pair */
+} table;
 
 int insert(table *, unsigned char *, unsigned char *);
 

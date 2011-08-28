@@ -1,4 +1,4 @@
-DEBUG = -ggdb
+DEBUG=-ggdb
 
 hashtable : main.o hash.o
 	gcc $(DEBUG) -o hashtable main.o hash.o
