@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     int i;
 
     table *main_table = (table *)malloc(sizeof(table));
-    main_table->l = NULL; main_table->r = NULL; main_table->p = NULL;
+    main_table->l = NULL; main_table->r = NULL;
     if(!main_table) {
       perror("MAIN");
       exit(-1);

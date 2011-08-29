@@ -2,15 +2,14 @@
 #define __HASH__ 
 
 typedef struct pair {
-  unsigned char *key;
-  unsigned char *val;
-  struct pair *p;
+  void *key;
+  void *val;
+  void *next;
 }pair;
 
 typedef struct table {
-  struct table *l; /* left */
-  struct table *r; /* right */
-  pair *p; /* key-val pair */
+  void *l; /* left  */ //as well as act as pair pointer when leaf
+  void *r; /* right */
 } table;
 
 int insert(table *, unsigned char *, unsigned char *);

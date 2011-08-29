@@ -4,11 +4,11 @@
 #include "hash.h"
 
 #define t (table_mem)=(table_mem)+(sizeof(table))
-#define pt (real_mem)=(real_mem)+(sizeof(pair))
-#define LENGTH 1000
+#define pt (pair_mem)=(pair_mem)+(sizeof(pair))
 
 static long collisions = 0;
 static long long table_mem = 0;
+static long long pair_mem = 0;
 static long long real_mem = 0;
 static long long key_count = 0;
 static long long hash(unsigned char *);
@@ -32,7 +32,7 @@ long long hash(unsigned char *c) {
 int insert(table *main_table, unsigned char *key, unsigned char *val) {
   if(!key || !val)
     return -1;
-  int collided = 0;
+  int collided = 0, klen = strlen(key)+1, vlen = strlen(val)+1;
   unsigned char *k, *v;
 
   table *tab = get_location(main_table,key);
@@ -41,35 +41,35 @@ int insert(table *main_table, unsigned char *key, unsigned char *val) {
     exit(1);
   }
   
-  if(tab->p != NULL && strcmp(key,(unsigned char *)(((pair *)tab->p)->key)) == 0) {
-    v = (unsigned char *)malloc(LENGTH);
-    strcpy(v,val);
-    ((pair *)tab->p)->val = v;
-    return 0; /* overwrite value */
+  if(tab->l != NULL && strcmp(key,(unsigned char *)(((pair *)tab->l)->key)) == 0) {
+    v = (unsigned char *)malloc(vlen); real_mem+=vlen;
+    memcpy(v,val,vlen);
+    ((pair *)tab->l)->val = v; /* overwrite value */
+    return 0;
   }
 
   pair *p = (pair *)malloc(sizeof(pair)); pt;
-  k = (unsigned char *)malloc(LENGTH);
-  v = (unsigned char *)malloc(LENGTH);
+  k = (unsigned char *)malloc(klen); real_mem+=klen;
+  v = (unsigned char *)malloc(vlen); real_mem+=vlen;
   if(!p || !k || !v) {
     perror("INSERT");
     exit(1);
   }
-  p->key = NULL; p->val = NULL; p->p = NULL;
+  p->key = NULL; p->val = NULL; p->next = NULL;
 
-  strcpy(k,key);
-  strcpy(v,val);
+  memcpy(k,key,klen);
+  memcpy(v,val,vlen);
   p->key = (unsigned char *) k;
   p->val = (unsigned char *) v;
 
-  if(tab->p == NULL) {
-    tab->p = p;
+  if(tab->l == NULL) {
+    tab->l = p;
   }else {
     collisions++;
     collided++;
-    pair *temp = tab->p;
-    tab->p = p;
-    p->p = temp;
+    pair *temp = tab->l;
+    tab->l = p;
+    p->next = temp;
   }
   key_count++;
   return collided;
@@ -82,17 +82,17 @@ unsigned char * lookup(table *main_table, unsigned char *key) {
     exit(1);
   }
 
-  if(tab->p == NULL)
+  if(tab->l == NULL)
     return NULL;
-  else if(tab->p != NULL && ((pair *)tab->p)->p == NULL)
-    return (unsigned char *)(((pair *)tab->p)->val);
+  else if(tab->l != NULL && ((pair *)tab->l)->next == NULL)
+    return (unsigned char *)(((pair *)tab->l)->val);
   else {
     /* search through the chain to resolve collision */
-    pair *temp = tab->p;
-    while(temp->p != NULL) {
+    pair *temp = tab->l;
+    while(temp->next != NULL) {
       if(strcmp(key, (unsigned char *)(temp->key)) == 0)
         return (unsigned char *)(temp->val);
-      temp = temp->p;
+      temp = temp->next;
     }
   }
   return NULL;
@@ -118,7 +118,7 @@ table *get_location(table *main_table, unsigned char *key) {
           exit(1);
         }
         tab = tab->l;
-        tab->l = NULL; tab->r = NULL; tab->p = NULL;
+        tab->l = NULL; tab->r = NULL;
       }else{
         tab = tab->l;
       }
@@ -130,7 +130,7 @@ table *get_location(table *main_table, unsigned char *key) {
           exit(1);
         }
         tab = tab->r;
-        tab->l = NULL; tab->r = NULL; tab->p = NULL;
+        tab->l = NULL; tab->r = NULL;
       }else{
         tab = tab->r;
       }
@@ -145,7 +145,7 @@ long total_collisions() {
 }
 
 long long total_memory() {
-  return real_mem + table_mem;
+  return table_mem + pair_mem + real_mem;
 }
 
 long long real_memory() {
@@ -157,5 +157,5 @@ long long total_keys() {
 }
 
 double memory_efficiency() {
-  return (double)((real_mem * (long double)100)/(real_mem + table_mem));
+  return (double)((real_mem * (long double)100)/(table_mem + pair_mem + real_mem));
 }
